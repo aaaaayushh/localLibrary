@@ -3,7 +3,7 @@ var express = require("express");
 var path = require("path");
 var cookieParser = require("cookie-parser");
 var logger = require("morgan");
-
+var compression = require('compression')
 var indexRouter = require("./routes/index");
 var usersRouter = require("./routes/users");
 var catalogRouter = require("./routes/catalog");
@@ -12,8 +12,10 @@ var coolRouter = require("./routes/cool");
 var app = express();
 
 var mongoose = require("mongoose");
-var mongoDB =
+var dev_db_url =
   "mongodb+srv://Aayush:aayush1108@cluster0.na6zn.mongodb.net/local_library?retryWrites=true&w=majority";
+var mongoDB =process.env.MONGODB_URI || dev_db_url;
+  
 mongoose.connect(mongoDB, { useNewUrlParser: true, useUnifiedTopology: true });
 var db = mongoose.connection;
 db.on("error", console.error.bind(console, "MongoDB connection error:"));
@@ -30,6 +32,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 //express.static middleware to serve all static files in the /public directory
+app.use(compression());
 app.use(express.static(path.join(__dirname, "public")));
 
 //define particular routes for different parts of the site
